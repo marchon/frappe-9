@@ -19,6 +19,14 @@ frappe.ui.form.on('User', {
 		}
 
 	},
+	upload_signature_image: function(frm) {
+		if(frm.doc.upload_signature_image){
+			frm.set_value("email_signature" ,"<img src = \"" + frm.doc.upload_signature_image + "\" >" )
+		}
+		else{
+			frm.set_value("email_signature" ,'')
+		}
+	},
 	onload: function(frm) {
 		if(has_common(user_roles, ["Administrator", "System Manager"]) && !frm.doc.__islocal) {
 			if(!frm.roles_editor) {

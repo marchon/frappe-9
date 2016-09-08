@@ -47,6 +47,7 @@ frappe.views.CommunicationComposer = Class.extend({
 	},
 
 	get_fields: function() {
+                
 		return [
 			{fieldtype: "Section Break"},
 			{label:__("To"), fieldtype:"Data", reqd: 0, fieldname:"recipients"},
@@ -320,21 +321,45 @@ frappe.views.CommunicationComposer = Class.extend({
 			.find("[data-file-name]:checked"), function(element) {
 				return $(element).attr("data-file-name");
 			})
+                
+	        if(selected_attachments.length > 0){
+                        alert(selected_attachments)
+			if(form_values.attach_document_print) {
+				if (cur_frm.print_preview.is_old_style(form_values.select_print_format || "")) {
+					cur_frm.print_preview.with_old_style({
+						format: form_values.select_print_format,
+						callback: function(print_html) {
+							me.send_email(btn, form_values, selected_attachments, print_html);
+						}
+					});
+				} else {
+					me.send_email(btn, form_values, selected_attachments, null, form_values.select_print_format || "");
+				}
 
-		if(form_values.attach_document_print) {
-			if (cur_frm.print_preview.is_old_style(form_values.select_print_format || "")) {
-				cur_frm.print_preview.with_old_style({
-					format: form_values.select_print_format,
-					callback: function(print_html) {
-						me.send_email(btn, form_values, selected_attachments, print_html);
-					}
-				});
 			} else {
 				me.send_email(btn, form_values, selected_attachments, null, form_values.select_print_format || "");
 			}
+			
+		}
+		else{
+		      
+			frappe.confirm(__("No file attached.Do you want to send mail without attachments ?"), function () {
+				if(form_values.attach_document_print) {
+					if (cur_frm.print_preview.is_old_style(form_values.select_print_format || "")) {
+						cur_frm.print_preview.with_old_style({
+							format: form_values.select_print_format,
+							callback: function(print_html) {
+								me.send_email(btn, form_values, selected_attachments, print_html);
+							}
+						});
+					} else {
+						me.send_email(btn, form_values, selected_attachments, null, form_values.select_print_format || "");
+					}
 
-		} else {
-			me.send_email(btn, form_values, selected_attachments);
+				} else {
+					me.send_email(btn, form_values, selected_attachments, null, form_values.select_print_format || "");
+				}
+			});
 		}
 	},
 
